@@ -25,7 +25,9 @@ If you use the codes and models from this repo, please cite our work. Thanks!
 
 Or install requirement via:
 
-> pip3 install -r requirement.txt
+```
+pip3 install -r requirement.txt
+```
 
 ## Usage
 

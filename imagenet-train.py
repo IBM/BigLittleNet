@@ -41,7 +41,7 @@ parser.add_argument('--gpu', help='comma separated list of GPU(s) to use.')
 parser.add_argument('--data', metavar='DIR',
                     help='path to dataset')
 parser.add_argument('-j', '--workers', default=18, type=int, metavar='N',
-                    help='number of data loading workers (default: 4)')
+                    help='number of data loading workers (default: 18)')
 
 parser.add_argument('--epochs', default=110, type=int, metavar='N',
                     help='number of total epochs to run')

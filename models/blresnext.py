@@ -10,9 +10,12 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-import torch.nn as nn
-import torch
 import math
+
+import torch
+import torch.nn as nn
+
+from ._model_urls import model_urls
 
 __all__ = ['blresnext_model']
 
@@ -211,13 +214,20 @@ class bLResNeXt(nn.Module):
         return x
 
 
-def blresnext_model(depth, basewidth, cardinality, alpha, beta, num_classes=1000):
+def blresnext_model(depth, basewidth, cardinality, alpha, beta,
+                    num_classes=1000, pretrained=False):
     layers = {
         50: [3, 4, 6, 3],
         101: [4, 8, 18, 3],
         152: [5, 12, 30, 3]
     }[depth]
 
-    model = bLResNeXt(Bottleneck, layers, basewidth, cardinality, alpha, beta, num_classes)
+    model = bLResNeXt(Bottleneck, layers, basewidth, cardinality,
+                      alpha, beta, num_classes)
+    if pretrained:
+        url = model_urls['blresnext-{}-{}x{}d-a{}-b{}'.format(depth, cardinality,
+                                                              basewidth, alpha, beta)]
+        checkpoint = torch.load(url)
+        model.load_state_dict(checkpoint['state_dict'])
 
     return model

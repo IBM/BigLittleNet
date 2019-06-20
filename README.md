@@ -33,7 +33,7 @@ pip3 install -r requirement.txt
 
 The training script is mostly borrow from the imagenet example of [pytorch/examples](https://github.com/pytorch/examples/tree/master/imagenet) with modifications.
 
-Please refer the instruction there to prepare the ImageNet dataset.
+Please refer the instructions there to prepare the ImageNet dataset.
 
 ### Training
 
@@ -43,3 +43,33 @@ python3 imagenet-train.py --data /path/to/folder -d 101 --basewidth 4 \
 --cardinality 64 --backbone_net blresnext --alpha 2 --beta 4 \
 --lr_scheduler cosine --logdir LOGDIR --gpu 0,1
 ```
+
+### Test
+
+After download the models, put in the `pretrained` folder.
+Evaluating the bL-ResNeXt-101 (64×4d) (α = 2, β = 4) model with two GPUs.
+```
+python3 imagenet-train.py --data /path/to/folder -d 101 --basewidth 4 \
+--cardinality 64 --backbone_net blresnext --alpha 2 --beta 4 --evaluate \
+--gpu 0,1 --pretrained
+```
+
+Please feel free to raise issue if you encounter issue when using the pretrained models.
+
+
+### Results and Models
+
+
+After the submission, we re-train our models on PyTorch with the same setting described in the paper.
+
+Performance of Big-Little Net models (evaluating on a single 224x224 image.)
+
+|   Model     | Top-1 Error     | FLOPs (10^9) |
+|-------------|-----------------|-------|
+|[bLResNet-50 (α = 2, β = 4)](https://ibm.box.com/v/blresnet-50-a2-b4)|22.41%|2.85|
+|[bLResNet-101 (α = 2, β = 4)](https://ibm.box.com/v/blresnet-101-a2-b4)|21.34%|3.89|
+|[bLResNeXt-50 (32x4d) (α = 2, β = 4)](https://ibm.box.com/v/blresnext-50-32x4d-a2-b4)|21.62%|3.03|
+|[bLResNeXt-101 (32x4d) (α = 2, β = 4)](https://ibm.box.com/v/blresnext-101-32x4d-a2-b4)|20.87%|4.08|
+|[bLResNeXt-101 (64x4d) (α = 2, β = 4)](https://ibm.box.com/v/blresnext-101-64x4d-a2-b4)|20.34%|7.97|
+|[bLSEResNeXt-50 (32x4d) (α = 2, β = 4)](https://ibm.box.com/v/blseresnext-50-32x4d-a2-b4)|21.44%|3.03|
+|[bLSEResNeXt-101 (32x4d) (α = 2, β = 4)](https://ibm.box.com/v/blseresnext-101-32x4d-a2-b4)|21.04%|4.08|

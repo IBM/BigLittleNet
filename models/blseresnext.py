@@ -10,9 +10,12 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-import torch.nn as nn
-import torch
 import math
+
+import torch
+import torch.nn as nn
+
+from ._model_urls import model_urls
 
 __all__ = ['blseresnext_model']
 
@@ -165,8 +168,8 @@ class bLSEResNeXt(nn.Module):
                                * block.expansion, layers[1], basewidth, cardinality, alpha, beta, stride=2)
         self.layer3 = bLModule(block, num_channels[1] * block.expansion, num_channels[2]
                                * block.expansion, layers[2], basewidth, cardinality, alpha, beta, stride=1)
-        self.layer4 = self._make_layer(
-            block, num_channels[2] * block.expansion, num_channels[3] * block.expansion, layers[3], basewidth, cardinality, stride=2)
+        self.layer4 = self._make_layer(block, num_channels[2] * block.expansion,
+                                       num_channels[3] * block.expansion, layers[3], basewidth, cardinality, stride=2)
         self.gappool = nn.AdaptiveAvgPool2d(1)
         self.fc = nn.Linear(num_channels[3] * block.expansion, num_classes)
 
@@ -239,13 +242,20 @@ class bLSEResNeXt(nn.Module):
         return x
 
 
-def blseresnext_model(depth, basewidth, cardinality, alpha, beta, num_classes=1000):
+def blseresnext_model(depth, basewidth, cardinality, alpha, beta,
+                      num_classes=1000, pretrained=False):
     layers = {
         50: [3, 4, 6, 3],
         101: [4, 8, 18, 3],
         152: [5, 12, 30, 3]
     }[depth]
 
-    model = bLSEResNeXt(Bottleneck, layers, basewidth, cardinality, alpha, beta, num_classes)
+    model = bLSEResNeXt(Bottleneck, layers, basewidth, cardinality,
+                        alpha, beta, num_classes)
+    if pretrained:
+        url = model_urls['blseresnext-{}-{}x{}d-a{}-b{}'.format(depth, cardinality,
+                                                                basewidth, alpha, beta)]
+        checkpoint = torch.load(url)
+        model.load_state_dict(checkpoint['state_dict'])
 
     return model

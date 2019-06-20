@@ -10,8 +10,10 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-import torch.nn as nn
 import torch
+import torch.nn as nn
+
+from ._model_urls import model_urls
 
 __all__ = ['blresnet_model']
 
@@ -197,11 +199,16 @@ class bLResNet(nn.Module):
         return x
 
 
-def blresnet_model(depth, alpha, beta, num_classes=1000):
+def blresnet_model(depth, alpha, beta, num_classes=1000, pretrained=False):
     layers = {
         50: [3, 4, 6, 3],
         101: [4, 8, 18, 3],
         152: [5, 12, 30, 3]
     }[depth]
     model = bLResNet(Bottleneck, layers, alpha, beta, num_classes)
+
+    if pretrained:
+        url = model_urls['blresnet-{}-a{}-b{}'.format(depth, alpha, beta)]
+        checkpoint = torch.load(url)
+        model.load_state_dict(checkpoint['state_dict'])
     return model

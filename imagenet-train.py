@@ -31,7 +31,7 @@ parser = argparse.ArgumentParser(description='PyTorch ImageNet Training')
 parser.add_argument('--backbone_net', default='blresnext', type=str, help='backbone network',
                     choices=['blresnext', 'blresnet', 'blseresnext'])
 parser.add_argument('-d', '--depth', default=50, type=int, metavar='N',
-                    help='depth of resnext (default: 50)', choices=[50, 101, 152, 154])
+                    help='depth of resnext (default: 50)', choices=[50, 101, 152])
 parser.add_argument('--basewidth', default=4, type=int, help='basewidth')
 parser.add_argument('--cardinality', default=32, type=int, help='cardinality')
 parser.add_argument('--alpha', default=2, type=int, metavar='N', help='ratio of channels')
@@ -62,7 +62,7 @@ parser.add_argument('--resume', default='', type=str, metavar='PATH',
                     help='path to latest checkpoint (default: none)')
 parser.add_argument('-e', '--evaluate', dest='evaluate', action='store_true',
                     help='evaluate model on validation set')
-parser.add_argument('--pretrained', dest='pretrained', type=str, metavar='PATH',
+parser.add_argument('--pretrained', dest='pretrained', action='store_true',
                     help='use pre-trained model')
 parser.add_argument('--logdir', default='', type=str, help='log path')
 
@@ -94,17 +94,16 @@ def main():
     else:
         raise ValueError("Unsupported backbone.")
 
+    # add class number and whether or not load pretrained model
+    backbone_setting += [1000, args.pretrained]
     # create model
-    model = backbone(*backbone_setting).cuda()
-
-    model = torch.nn.DataParallel(model).cuda()
-
-    if args.pretrained is not None:
+    model = backbone(*backbone_setting)
+    if args.pretrained:
         print("=> using pre-trained model '{}'".format(arch_name))
-        checkpoint = torch.load(args.pretrained)
-        model.load_state_dict(checkpoint['state_dict'])
     else:
         print("=> creating model '{}'".format(arch_name))
+
+    model = torch.nn.DataParallel(model).cuda()
 
     # define loss function (criterion) and optimizer
     train_criterion = nn.CrossEntropyLoss().cuda()
